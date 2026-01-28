@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel External - Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0f;
+            color: #ffffff;
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .panel-container {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #16161a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: background 200ms ease;
+        }
+
+        .input-field {
+            background-color: #222226;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            width: 100%;
+            color: white;
+            margin-bottom: 12px;
+            outline: none;
+            transition: box-shadow 150ms ease, transform 150ms ease;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: bold;
+            padding: 14px;
+            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            transition: opacity 0.2s, transform 120ms ease;
+        }
+
+        .btn-primary:hover { transform: translateY(-3px); }
+
+        .btn-secondary {
+            background-color: #222226;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 14px;
+            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+            transition: transform 120ms ease, background 120ms ease;
+        }
+
+        .btn-secondary:hover { transform: translateY(-2px); background:#2a2a2d; }
+
+        .btn-freefire {
+            color: #ffffff !important;
+        }
+
+        .menu-item {
+            background-color: #222226;
+            border-radius: 15px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 150ms ease, box-shadow 150ms ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .menu-item .w-10 {
+            background: rgba(255,255,255,0.03);
+        }
+        .menu-item .w-10 svg {
+            stroke: #ffffff;
+            fill: none;
+        }
+        .menu-item .w-10 svg * {
+            stroke: #ffffff;
+            fill: none;
+        }
+
+        .card-function {
+            background-color: #222226;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .checkbox-custom {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #555;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 120ms ease, transform 120ms ease;
+        }
+
+        .checkbox-custom.active {
+            border-color: #4ade80;
+            background-color: transparent;
+            transform: scale(1.05);
+        }
+
+        .checkbox-custom.active::after {
+            content: '✓';
+            color: #4ade80;
+            font-size: 14px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-overlay.visible { display: flex; animation: modalFadeIn .22s ease both; }
+
+        .modal-content {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            transform-origin: center;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #ffffff; }
+        input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
+
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: #222;
+            border-radius: 2px;
+            margin-top: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: #fff;
+            position: absolute;
+            animation: load 2s infinite;
+        }
+        @keyframes load {
+            0% { width: 0%; left: 0; }
+            50% { width: 50%; left: 25%; }
+            100% { width: 0%; left: 100%; }
+        }
+
+        .hidden { display: none; }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 24px;
+            background: rgba(255,255,255,0.95);
+            color: #000;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 200;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+        }
+
+        .animate-in { animation: pageIn .28s ease both; }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.995); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .eye-btn {
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .eye-btn:active { transform: scale(0.96); }
+
+    </style>
+</head>
+<body>
+
+<div class="panel-container">
+    
+    <!-- LOGIN PAGE -->
+    <div id="page-login" class="p-8 flex flex-col justify-center min-vh-100 flex-grow">
+        <h1 class="text-3xl font-medium text-center mb-6 mt-16">Faça Login</h1>
+        
+        <div class="relative">
+            <input type="text" placeholder="Usuário" class="input-field" id="user-input" autocomplete="username">
+        </div>
+        
+        <div class="relative" style="position:relative;">
+            <input type="password" placeholder="Senha" class="input-field pr-12" id="pass-input" autocomplete="current-password">
+            <button id="toggle-pass" class="eye-btn" aria-label="Mostrar senha" title="Mostrar senha">
+                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            </button>
+        </div>
+
+        <div style="margin-top:8px;">
+            <button onclick="handleLogin()" class="btn-primary mt-6">Entrar</button>
+        </div>
+    </div>
+
+    <!-- MAIN MENU -->
+    <div id="page-main" class="hidden p-6">
+        <div class="flex justify-between items-center mb-10 mt-4">
+            <h2 class="text-2xl font-medium">Funções</h2>
+            <button onclick="logout()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-funcoes')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="8" height="8" rx="2"></rect>
+                    <rect x="13" y="3" width="8" height="8" rx="2"></rect>
+                    <rect x="3" y="13" width="8" height="8" rx="2"></rect>
+                    <rect x="13" y="13" width="8" height="8" rx="2"></rect>
+                </svg>
+            </div>
+            <span class="text-lg">Funções</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-metodos')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 6h11"></path>
+                    <path d="M8 12h11"></path>
+                    <path d="M8 18h11"></path>
+                    <circle cx="4" cy="6" r="1.5"></circle>
+                    <circle cx="4" cy="12" r="1.5"></circle>
+                    <circle cx="4" cy="18" r="1.5"></circle>
+                </svg>
+            </div>
+            <span class="text-lg">Métodos</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-otimizacoes')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2s-4 4-4 8a4 4 0 0 0 8 0c0-4-4-8-4-8z"></path>
+                    <path d="M8.5 12.5C7.2 10 8 8 9.5 6.5"></path>
+                </svg>
+            </div>
+            <span class="text-lg">Otimizações</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-ajustes')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"></path>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82L4.3 4.7A2 2 0 1 1 7.12 1.88l.06.06A1.65 1.65 0 0 0 9 2.27c.5.2.86.7.86 1.27V4a2 2 0 0 1 4 0v.09c0 .57.36 1.07.86 1.27.46.18.9.2 1.32-.02l.06-.06A2 2 0 0 1 20 4.3l-.06.06a1.65 1.65 0 0 0-.33 1.82c.2.5.7.86 1.27.86H21a2 2 0 0 1 0 4h-.09c-.57 0-1.07.36-1.27.86z"></path>
+                </svg>
+            </div>
+            <span class="text-lg">Ajustes Gerais</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-suporte')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M9.5 9.5a2.5 2.5 0 1 1 5 0c0 2-2.5 2.5-2.5 4"></path>
+                    <path d="M12 17h.01"></path>
+                </svg>
+            </div>
+            <span class="text-lg">Suporte</span>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: FUNCOES (AIMBOT) -->
+    <div id="page-funcoes" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Funções</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimbot')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-bot Auxílio</h3>
+                <p class="text-gray-400 text-sm mt-1">Ajuda a acertar os tiros.</p>
+            </div>
+            <div id="cb-aimbot" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimlock')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-Lock Auxílio</h3>
+                <p class="text-gray-400 text-sm mt-1">Não passa da cabeça ou treme os tiros.</p>
+            </div>
+            <div id="cb-aimlock" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimfov')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-Fov Beta</h3>
+                <p class="text-gray-400 text-sm mt-1">Puxa sua mira para os inimigos.</p>
+            </div>
+            <div id="cb-aimfov" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('miraBranca')">
+            <div>
+                <h3 class="text-lg font-medium">Melhorar Mira Branca</h3>
+                <p class="text-gray-400 text-sm mt-1">Aprimora a precisão da mira branca (crosshair).</p>
+            </div>
+            <div id="cb-miraBranca" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('miraScope')">
+            <div>
+                <h3 class="text-lg font-medium">Melhorar Mira Scope</h3>
+                <p class="text-gray-400 text-sm mt-1">Ajustes automáticos para mira com scope.</p>
+            </div>
+            <div id="cb-miraScope" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('calibrarSens')">
+            <div>
+                <h3 class="text-lg font-medium">Calibrar Sensibilidade</h3>
+                <p class="text-gray-400 text-sm mt-1">Calibra sensibilidade para o seu perfil.</p>
+            </div>
+            <div id="cb-calibrarSens" class="checkbox-custom"></div>
+        </div>
+
+        <div class="mt-8 space-y-4">
+            <button class="btn-secondary btn-freefire" onclick="launchGame('com.dts.freefire','Free Fire Normal')">Abrir Free Fire Normal</button>
+            <button class="btn-secondary btn-freefire" onclick="launchGame('com.dts.freefiremax','Free Fire MAX')">Abrir Free Fire MAX</button>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: METODOS -->
+    <div id="page-metodos" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Métodos</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">ControlShot</h3>
+                <p class="text-gray-400 text-sm">Ajuda a não passar da cabeça com qualquer arma.</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">ControllFull</h3>
+                <p class="text-gray-400 text-sm">Facilita o acerto na cabeça com foco em armas como UMP, MAC10, MP40...</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+        
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">GlooWall</h3>
+                <p class="text-gray-400 text-sm">Tenha o gelo perfeito.</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: OTIMIZACOES -->
+    <div id="page-otimizacoes" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Otimizações</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-center" onclick="toggleOptimization('Limpar fotos duplicadas', this)">
+            <div>
+                <h3 class="text-lg font-medium">Limpar fotos duplicadas</h3>
+                <p class="text-gray-400 text-xs">Remove fotos duplicadas da biblioteca de fotos</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="card-function flex justify-between items-center" onclick="toggleOptimization('Limpar cache', this)">
+            <div>
+                <h3 class="text-lg font-medium">Limpar cache</h3>
+                <p class="text-gray-400 text-xs">Limpa o cache do iPhone</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="card-function flex justify-between items-center" onclick="toggleOptimization('Otimizar armazenamento', this)">
+            <div>
+                <h3 class="text-lg font-medium">Otimizar armazenamento</h3>
+                <p class="text-gray-400 text-xs">Libera espaço de armazenamento no dispositivo</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <button class="btn-primary mt-6 text-black uppercase tracking-widest py-3">Otimizar</button>
+    </div>
+
+    <!-- SUBPAGE: AJUSTES GERAIS -->
+    <div id="page-ajustes" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Ajustes Gerais</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function">
+            <h3 class="text-lg font-medium">Tema</h3>
+            <p class="text-gray-400 text-sm mt-1">Alternar tema claro/escuro (simulação).</p>
+            <div class="mt-4">
+                <button class="btn-secondary" onclick="toggleTheme()">Alternar Tema</button>
+            </div>
+        </div>
+
+        <div class="card-function">
+            <h3 class="text-lg font-medium">Notificações</h3>
+            <p class="text-gray-400 text-sm mt-1">Ativar/Desativar notificações locais.</p>
+            <div class="mt-4">
+                <label class="switch"><input id="notif-switch" type="checkbox"><span class="slider"></span></label>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: SUPORTE -->
+    <div id="page-suporte" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Suporte</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function">
+            <h3 class="text-lg font-medium">Contato</h3>
+            <p class="text-gray-400 text-sm mt-1">: </p>
+            <p class="text-gray-400 text-sm mt-1">: @AizenZada</p>
+            <div class="mt-4">
+                <button class="btn-secondary" onclick="showToast('Enviando solicitação de suporte...')">Abrir Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: LOGIN SUCCESS -->
+    <div id="modal-success" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Sucesso</h3>
+            <p class="text-sm">Usuário: <span id="display-user"></span></p>
+            <p class="text-sm">Nome de Exibição: <span id="display-name"></span></p>
+            <p class="text-sm mt-4">Expira em: <span id="expiry-date"></span></p>
+            <p class="text-sm mb-6">Vendedor: Aizen Zada</p>
+            <button onclick="closeModal('modal-success', true)" class="bg-emerald-500 text-black font-bold py-3 w-full rounded-xl">OK</button>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRM ACTIVATION -->
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Confirmação</h3>
+            <p class="text-sm mb-6">Tem certeza de que deseja ativar <span id="func-name"></span>?</p>
+            <button onclick="startActivation()" class="bg-sky-400 text-black font-bold py-3 w-full rounded-xl mb-3">Confirmar</button>
+            <button onclick="closeModal('modal-confirm')" class="bg-sky-400 text-black font-bold py-3 w-full rounded-xl">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL: WAITING / AGUARDE -->
+    <div id="modal-wait" class="modal-overlay">
+        <div class="modal-content py-10">
+            <h3 class="text-xl font-medium">Aguarde</h3>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ACTIVATION SUCCESS -->
+    <div id="modal-act-success" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Sucesso</h3>
+            <p class="text-sm mb-6"><span id="activated-name"></span> foi ativado com sucesso!</p>
+            <div id="cert-link-container" class="mt-2"></div>
+            <button onclick="closeModal('modal-act-success')" class="bg-emerald-500 text-black font-bold py-3 w-full rounded-xl">OK</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- AUDIO ELEMENTS: 4 tinguj të ndryshëm -->
+<audio id="aimbot-sound" src="Aimbot Activated.mp3" preload="auto"></audio>
+<audio id="aimlock-sound" src="1.mp3" preload="auto"></audio>
+<audio id="activate-sound" src="Activa.mp3" preload="auto"></audio>
+<audio id="deactivate-sound" src="desactivar.mp3" preload="auto"></audio>
+
+<script>
+    let currentUser = "";
+    let selectedFunc = "";
+    let pendingOptElem = null;
+    let darkMode = true;
+
+    // VALID KEYS SYSTEM
+    const VALID_KEYS = {
+        'test2000': { 
+            password: 'PremiumV2', 
+            displayName: 'Premium User',
+            expiryDate: '2026-01-30'
+        },
+        'Test2000': { 
+            password: 'PremiumV2', 
+            displayName: 'Administrator',
+            expiryDate: '2026-12-31'
+        },
+        'test': { 
+            password: 'test123', 
+            displayName: 'Test Account',
+            expiryDate: '2026-03-15'
+        },
+        'aizen': { 
+            password: 'aizen123', 
+            displayName: 'Aizen Zada',
+            expiryDate: '2026-02-15'
+        }
+    };
+
+    const FUNCTIONS_MAP = {
+        'aimbot': 'Aim-bot Auxílio',
+        'aimlock': 'Aim-Lock Auxílio',
+        'aimfov': 'Aim-Fov Beta',
+        'miraBranca': 'Melhorar Mira Branca',
+        'miraScope': 'Melhorar Mira Scope',
+        'calibrarSens': 'Calibrar Sensibilidade'
+    };
+
+    const CERT_URL = "Aimfov-beta";
+
+    // PLAY AIMBOT SPECIAL SOUND
+    function playAimbotSound(volume = 0.6) {
+        const audio = document.getElementById('aimbot-sound');
+        if (!audio) return;
+        try {
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    // PLAY AIMLOCK SPECIAL SOUND
+    function playAimlockSound(volume = 0.6) {
+        const audio = document.getElementById('aimlock-sound');
+        if (!audio) return;
+        try {
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    // PLAY ACTIVATION SOUND (për funksionet e tjera)
+    function playActivateSound(volume = 0.6) {
+        const audio = document.getElementById('activate-sound');
+        if (!audio) return;
+        try {
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    // PLAY DEACTIVATION SOUND
+    function playDeactivateSound(volume = 0.6) {
+        const audio = document.getElementById('deactivate-sound');
+        if (!audio) return;
+        try {
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    function showElementWithAnim(el) {
+        el.classList.remove('hidden');
+        el.classList.add('animate-in');
+        setTimeout(() => el.classList.remove('animate-in'), 350);
+    }
+
+    // CHECK AUTO LOGIN ON PAGE LOAD
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedUser = localStorage.getItem('loggedUser');
+        const savedExpiry = localStorage.getItem('expiryDate');
+
+        if (savedUser && savedExpiry) {
+            const today = new Date();
+            const expiry = new Date(savedExpiry);
+
+            if (today <= expiry) {
+                // AUTO-LOGIN
+                currentUser = savedUser;
+                document.getElementById('page-login').classList.add('hidden');
+                showElementWithAnim(document.getElementById('page-main'));
+                return;
+            } else {
+                // Key expirou
+                localStorage.removeItem('loggedUser');
+                localStorage.removeItem('expiryDate');
+                localStorage.removeItem('displayName');
+            }
+        }
+
+        showElementWithAnim(document.getElementById('page-login'));
+    });
+
+    function handleLogin() {
+        const user = document.getElementById('user-input').value;
+        const pass = document.getElementById('pass-input').value;
+
+        // Kontrollo nëse është bosh
+        if(user.trim() === "") {
+            alert("❌ Por favor, insira o usuário");
+            return;
+        }
+
+        // VALIDIMI I KEY
+        if (!VALID_KEYS[user]) {
+            alert("❌ Usuário inválido!");
+            return;
+        }
+
+        if (VALID_KEYS[user].password !== pass) {
+            alert("❌ Senha incorreta!");
+            return;
+        }
+
+        // KONTROLLO EXPIRY DATE
+        const today = new Date();
+        const expiry = new Date(VALID_KEYS[user].expiryDate);
+        
+        if (today > expiry) {
+            alert("❌ Sua key expirou em " + VALID_KEYS[user].expiryDate);
+            return;
+        }
+
+        // RUAJ NË LOCALSTORAGE
+        localStorage.setItem('loggedUser', user);
+        localStorage.setItem('expiryDate', VALID_KEYS[user].expiryDate);
+        localStorage.setItem('displayName', VALID_KEYS[user].displayName);
+
+        // LOGIN SUKSES
+        currentUser = user;
+        document.getElementById('display-user').innerText = user;
+        document.getElementById('display-name').innerText = VALID_KEYS[user].displayName;
+        document.getElementById('expiry-date').innerText = VALID_KEYS[user].expiryDate;
+
+        const modal = document.getElementById('modal-success');
+        modal.classList.add('visible');
+    }
+
+    function closeModal(id, proceedToMain = false) {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.remove('visible');
+        setTimeout(() => {
+            if(proceedToMain) {
+                document.getElementById('page-login').classList.add('hidden');
+                showElementWithAnim(document.getElementById('page-main'));
+            }
+        }, 120);
+    }
+
+    function showSubPage(id) {
+        document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+        const el = document.getElementById(id);
+        if (el) showElementWithAnim(el);
+    }
+
+    function backToMain() {
+        document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+        showElementWithAnim(document.getElementById('page-main'));
+    }
+
+    function toggleFunction(type) {
+        const cb = document.getElementById('cb-' + type);
+        
+        // DEACTIVATION
+        if(cb && cb.classList.contains('active')) {
+            cb.classList.remove('active');
+            playDeactivateSound(0.6);
+            return;
+        } 
+        // ACTIVATION
+        else {
+            selectedFunc = type;
+            pendingOptElem = null;
+            document.getElementById('func-name').innerText = FUNCTIONS_MAP[type] || type;
+            const m = document.getElementById('modal-confirm');
+            m.classList.add('visible');
+        }
+    }
+
+    function toggleOptimization(displayName, elem) {
+        const checkbox = elem.querySelector('input[type="checkbox"]');
+        if (checkbox && checkbox.checked) {
+            checkbox.checked = false;
+            showToast(displayName + " desativado");
+            return;
+        }
+
+        selectedFunc = 'opt:' + displayName;
+        pendingOptElem = elem;
+        document.getElementById('func-name').innerText = displayName;
+        const m = document.getElementById('modal-confirm');
+        m.classList.add('visible');
+    }
+
+    function getDisplayName(key) {
+        if (!key) return '';
+        if (key.startsWith('opt:')) return key.slice(4);
+        return FUNCTIONS_MAP[key] || key;
+    }
+
+    function startActivation() {
+        const m = document.getElementById('modal-confirm');
+        m.classList.remove('visible');
+        const mw = document.getElementById('modal-wait');
+        mw.classList.add('visible');
+
+        setTimeout(() => {
+            mw.classList.remove('visible');
+            const displayName = getDisplayName(selectedFunc);
+            document.getElementById('activated-name').innerText = displayName;
+
+            const certContainer = document.getElementById('cert-link-container');
+            if (certContainer) certContainer.innerHTML = '';
+
+            // Apply UI changes
+            if (selectedFunc && selectedFunc.startsWith('opt:')) {
+                if (pendingOptElem) {
+                    const cb = pendingOptElem.querySelector('input[type="checkbox"]');
+                    if (cb) cb.checked = true;
+                }
+            } else {
+                if (FUNCTIONS_MAP[selectedFunc]) {
+                    const el = document.getElementById('cb-' + selectedFunc);
+                    if (el) el.classList.add('active');
+                    
+                    // PLAY APPROPRIATE SOUND
+                    if (selectedFunc === 'aimbot') {
+                        playAimbotSound(0.6);  // Aimbot Activated.wav
+                    } 
+                    else if (selectedFunc === 'aimlock') {
+                        playAimlockSound(0.6); // Aimlock Activated.wav
+                    }
+                    else {
+                        playActivateSound(0.6); // 1.mp3 për të tjerat
+                    }
+                }
+            }
+
+            const mac = document.getElementById('modal-act-success');
+
+            // Special case for aimfov
+            if (selectedFunc === 'aimfov') {
+                if (certContainer) {
+                    const p = document.createElement('p');
+                    p.className = 'text-sm';
+                    p.innerText = 'Clique para baixar o certificado (iPhone):';
+                    const a = document.createElement('a');
+                    a.id = 'cert-link';
+                    a.href = CERT_URL;
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    a.className = 'btn-secondary';
+                    a.style.display = 'inline-block';
+                    a.style.marginTop = '10px';
+                    a.innerText = 'Instalar Certificado';
+                    certContainer.appendChild(p);
+                    certContainer.appendChild(a);
+                }
+
+                setTimeout(() => {
+                    try {
+                        window.location.href = CERT_URL;
+                    } catch (e) {}
+                }, 1200);
+            }
+
+            mac.classList.add('visible');
+        }, 2000);
+    }
+
+    function logout() {
+        // FSHIJ NGA LOCALSTORAGE
+        localStorage.removeItem('loggedUser');
+        localStorage.removeItem('expiryDate');
+        localStorage.removeItem('displayName');
+        
+        document.getElementById('page-main').classList.add('hidden');
+        showElementWithAnim(document.getElementById('page-login'));
+        document.getElementById('user-input').value = "";
+        document.getElementById('pass-input').value = "";
+    }
+
+    function showToast(message, duration = 1800) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerText = message;
+        document.body.appendChild(t);
+        setTimeout(() => { t.style.transition = 'opacity 200ms'; t.style.opacity = '0'; }, duration - 200);
+        setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, duration);
+    }
+
+    function launchGame(packageName, gameName) {
+        showToast("ativando as funcoes no " + gameName);
+
+        setTimeout(() => {
+            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                window.location.href = "freefire://";
+            } else {
+                window.location.href = "intent://#Intent;scheme=android-app;package=" + packageName + ";end";
+            }
+        }, 1500);
+    }
+
+    // Password visibility toggle
+    (function setupPasswordToggle(){
+        const toggle = document.getElementById('toggle-pass');
+        const passInput = document.getElementById('pass-input');
+        const eyeIcon = document.getElementById('eye-icon');
+
+        toggle.addEventListener('click', () => {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggle.setAttribute('aria-label', 'Fshih fjalëkalimin');
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.996 9.996 0 012.223-3.804M6.82 6.82A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.96 9.96 0 01-4.293 5.198M3 3l18 18"/>';
+            } else {
+                passInput.type = 'password';
+                toggle.setAttribute('aria-label', 'Trego fjalëkalimin');
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+            }
+        });
+    })();
+
+    function toggleTheme() {
+        darkMode = !darkMode;
+        if (darkMode) {
+            document.body.style.backgroundColor = '#0d0d0f';
+            document.querySelector('.panel-container').style.backgroundColor = '#16161a';
+            showToast('Tema escuro ativado');
+        } else {
+            document.body.style.backgroundColor = '#f5f7fb';
+            document.querySelector('.panel-container').style.backgroundColor = '#ffffff';
+            showToast('Tema claro ativado');
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        const overlays = ['modal-success','modal-confirm','modal-wait','modal-act-success'];
+        overlays.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.classList.contains('visible') && e.target === el) {
+                el.classList.remove('visible');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

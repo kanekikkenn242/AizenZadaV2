@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel External - Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0f;
+            color: #ffffff;
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .panel-container {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #16161a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field {
+            background-color: #222226;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            width: 100%;
+            color: white;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: bold;
+            padding: 14px;
+            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .btn-secondary {
+            background-color: #222226;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 14px;
+            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .menu-item {
+            background-color: #222226;
+            border-radius: 15px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .card-function {
+            background-color: #222226;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .checkbox-custom {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #555;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox-custom.active {
+            border-color: #4ade80;
+            background-color: transparent;
+        }
+
+        .checkbox-custom.active::after {
+            content: '✓';
+            color: #4ade80;
+            font-size: 14px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #ffffff; }
+        input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
+
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: #222;
+            border-radius: 2px;
+            margin-top: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: #fff;
+            position: absolute;
+            animation: load 2s infinite;
+        }
+        @keyframes load {
+            0% { width: 0%; left: 0; }
+            50% { width: 50%; left: 25%; }
+            100% { width: 0%; left: 100%; }
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="panel-container">
+    
+    <!-- LOGIN PAGE -->
+    <div id="page-login" class="p-8 flex flex-col justify-center min-vh-100 flex-grow">
+        <h1 class="text-3xl font-medium text-center mb-12 mt-20">Faça Login</h1>
+        
+        <div class="relative">
+            <input type="text" placeholder="Usuário" class="input-field" id="user-input">
+        </div>
+        
+        <div class="relative">
+            <input type="password" placeholder="Senha" class="input-field" id="pass-input">
+            <button class="absolute right-4 top-4 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            </button>
+        </div>
+
+        <button onclick="handleLogin()" class="btn-primary mt-6">Entrar</button>
+    </div>
+
+    <!-- MAIN MENU -->
+    <div id="page-main" class="hidden p-6">
+        <div class="flex justify-between items-center mb-10 mt-4">
+            <h2 class="text-2xl font-medium">Funções</h2>
+            <button onclick="logout()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-funcoes')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </div>
+            <span class="text-lg">Funções</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-metodos')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+            </div>
+            <span class="text-lg">Métodos</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-otimizacoes')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4 text-orange-500">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+            </div>
+            <span class="text-lg">Otimizações</span>
+        </div>
+
+        <div class="menu-item">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+            </div>
+            <span class="text-lg">Ajustes Gerais</span>
+        </div>
+
+        <div class="menu-item">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <span class="text-xl font-bold">?</span>
+            </div>
+            <span class="text-lg">Suporte</span>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: FUNCOES (AIMBOT) -->
+    <div id="page-funcoes" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Funções</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimbot')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-bot Auxílio</h3>
+                <p class="text-gray-400 text-sm mt-1">Ajuda a acertar os tiros.</p>
+            </div>
+            <div id="cb-aimbot" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimlock')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-Lock Auxílio</h3>
+                <p class="text-gray-400 text-sm mt-1">Não passa da cabeça ou treme os tiros.</p>
+            </div>
+            <div id="cb-aimlock" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimfov')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-Fov Beta</h3>
+                <p class="text-gray-400 text-sm mt-1">Puxa sua mira para os inimigos.</p>
+            </div>
+            <div id="cb-aimfov" class="checkbox-custom"></div>
+        </div>
+
+        <div class="mt-8 space-y-4">
+            <button class="btn-secondary">Abrir Free Fire Normal</button>
+            <button class="btn-secondary">Abrir Free Fire MAX</button>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: METODOS -->
+    <div id="page-metodos" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Métodos</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">ControlShot</h3>
+                <p class="text-gray-400 text-sm">Ajuda a não passar da cabeça com qualquer arma.</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">ControllFull</h3>
+                <p class="text-gray-400 text-sm">Facilita o acerto na cabeça com foco em armas como UMP, MAC10, MP40...</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+        
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">GlooWall</h3>
+                <p class="text-gray-400 text-sm">Tenha o gelo perfeito.</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: OTIMIZACOES -->
+    <div id="page-otimizacoes" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Otimizações</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-medium">Limpar fotos duplicadas</h3>
+                <p class="text-gray-400 text-xs">Remove fotos duplicadas da biblioteca de fotos</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-medium">Limpar cache</h3>
+                <p class="text-gray-400 text-xs">Limpa o cache do iPhone</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-medium">Otimizar armazenamento</h3>
+                <p class="text-gray-400 text-xs">Libera espaço de armazenamento no dispositivo</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <button class="btn-primary mt-6 text-black uppercase tracking-widest py-3">Otimizar</button>
+    </div>
+
+    <!-- MODAL: LOGIN SUCCESS -->
+    <div id="modal-success" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Sucesso</h3>
+            <p class="text-sm">Usuário: <span id="display-user"></span></p>
+            <p class="text-sm">Nome de Exibição: aizenzada</p>
+            <p class="text-sm mt-4">Expira em: 2026-01-28</p>
+            <p class="text-sm mb-6">Vendedor: AizenZada</p>
+            <button onclick="closeModal('modal-success', true)" class="bg-emerald-500 text-black font-bold py-3 w-full rounded-xl">OK</button>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRM ACTIVATION -->
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Confirmação</h3>
+            <p class="text-sm mb-6">Tem certeza de que deseja ativar <span id="func-name"></span>?</p>
+            <button onclick="startActivation()" class="bg-sky-400 text-black font-bold py-3 w-full rounded-xl mb-3">Confirmar</button>
+            <button onclick="closeModal('modal-confirm')" class="bg-sky-400 text-black font-bold py-3 w-full rounded-xl">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL: WAITING / AGUARDE -->
+    <div id="modal-wait" class="modal-overlay">
+        <div class="modal-content py-10">
+            <h3 class="text-xl font-medium">Aguarde</h3>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ACTIVATION SUCCESS -->
+    <div id="modal-act-success" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Sucesso</h3>
+            <p class="text-sm mb-6"><span id="activated-name"></span> foi ativado com sucesso!</p>
+            <button onclick="closeModal('modal-act-success')" class="bg-emerald-500 text-black font-bold py-3 w-full rounded-xl">OK</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let currentUser = "";
+    let selectedFunc = "";
+
+    function handleLogin() {
+        const user = document.getElementById('user-input').value;
+        if(user.trim() === "") {
+            alert("Por favor, insira o usuário");
+            return;
+        }
+        currentUser = user;
+        document.getElementById('display-user').innerText = user;
+        document.getElementById('modal-success').style.display = 'flex';
+    }
+
+    function closeModal(id, proceedToMain = false) {
+        document.getElementById(id).style.display = 'none';
+        if(proceedToMain) {
+            document.getElementById('page-login').classList.add('hidden');
+            document.getElementById('page-main').classList.remove('hidden');
+        }
+    }
+
+    function showSubPage(id) {
+        document.getElementById('page-main').classList.add('hidden');
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function backToMain() {
+        document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+        document.getElementById('page-main').classList.remove('hidden');
+    }
+
+    function toggleFunction(type) {
+        const cb = document.getElementById('cb-' + type);
+        const nameMap = {
+            'aimbot': 'Aim-bot Auxílio',
+            'aimlock': 'Aim-Lock Auxílio',
+            'aimfov': 'Aim-Fov Beta'
+        };
+
+        if(cb.classList.contains('active')) {
+            cb.classList.remove('active');
+        } else {
+            selectedFunc = type;
+            document.getElementById('func-name').innerText = nameMap[type];
+            document.getElementById('modal-confirm').style.display = 'flex';
+        }
+    }
+
+    function startActivation() {
+        document.getElementById('modal-confirm').style.display = 'none';
+        document.getElementById('modal-wait').style.display = 'flex';
+        
+        setTimeout(() => {
+            document.getElementById('modal-wait').style.display = 'none';
+            const nameMap = {
+                'aimbot': 'Aim-bot Auxílio',
+                'aimlock': 'Aim-Lock Auxílio',
+                'aimfov': 'Aim-Fov Beta'
+            };
+            document.getElementById('activated-name').innerText = nameMap[selectedFunc];
+            document.getElementById('cb-' + selectedFunc).classList.add('active');
+            document.getElementById('modal-act-success').style.display = 'flex';
+        }, 2000);
+    }
+
+    function logout() {
+        document.getElementById('page-main').classList.add('hidden');
+        document.getElementById('page-login').classList.remove('hidden');
+        document.getElementById('user-input').value = "";
+        document.getElementById('pass-input').value = "";
+    }
+</script>
+
+</body>
+</html>
