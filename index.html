@@ -1,747 +1,949 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AizenZada</title>
-    <link rel="icon" href="https://via.placeholder.com/32/1d44b8/ffffff?text=A" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel External - Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            min-height: 100vh;
-            background: #000000;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: white;
-            -webkit-font-smoothing: antialiased;
-            position: relative;
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0f;
+            color: #ffffff;
+            margin: 0;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .animated-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        #neuralCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .neural-title {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: clamp(32px, 8vw, 72px);
-            font-weight: 900;
-            color: rgba(29, 68, 184, 0.15);
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            pointer-events: none;
-            z-index: 1;
-            text-shadow: 0 0 30px rgba(29, 68, 184, 0.3);
-            animation: pulse 4s ease-in-out infinite;
-            white-space: nowrap;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.02); }
-        }
-
-        .container {
-            position: relative;
-            z-index: 2;
+        .panel-container {
+            max-width: 430px;
+            margin: 0 auto;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .main-card {
-            background: rgba(16, 16, 16, 0.9);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 32px;
-            width: 100%;
-            max-width: 420px;
-            border: 1px solid rgba(29, 68, 184, 0.4);
-            box-shadow: 0 0 60px rgba(29, 68, 184, 0.3);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .logo {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 16px;
-            background: linear-gradient(135deg, #1d44b8 0%, #0f2557 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: bold;
-            box-shadow: 0 10px 40px rgba(29, 68, 184, 0.5);
-            letter-spacing: 2px;
-            overflow: hidden;
-            border: 3px solid rgba(29, 68, 184, 0.3);
-        }
-
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .app-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #1d44b8, #4a9eff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .app-subtitle {
-            font-size: 13px;
-            color: #9ca3af;
-        }
-
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 13px; color: #d1d5db; margin-bottom: 8px; font-weight: 600; }
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(29, 68, 184, 0.4);
-            border-radius: 12px;
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        .form-input:focus {
-            outline: none;
-            border-color: #1d44b8;
-            box-shadow: 0 0 0 3px rgba(29, 68, 184, 0.2);
-            background: rgba(0, 0, 0, 0.7);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 6px;
-            border-radius: 12px;
-            border: 1px solid rgba(29, 68, 184, 0.2);
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px 16px;
-            border: none;
-            background: transparent;
-            color: #6b7280;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
+            background-color: #16161a;
+            position: relative;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 6px;
+            transition: background 200ms ease;
         }
 
-        .tab.active {
-            background: linear-gradient(135deg, #1d44b8, #163894);
-            color: white;
-            box-shadow: 0 4px 16px rgba(29, 68, 184, 0.4);
-        }
-
-        .tab:hover:not(.active) {
-            background: rgba(29, 68, 184, 0.1);
-            color: #9ca3af;
-        }
-
-        .tab-icon {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            filter: grayscale(1) brightness(0.7);
-            transition: filter 0.3s;
-        }
-
-        .tab.active .tab-icon {
-            filter: grayscale(0) brightness(1.2);
-        }
-
-        .tab-content { 
-            display: none;
-        }
-        
-        .tab-content.active { 
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .feature-item {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(107, 114, 128, 0.5);
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            transition: all 0.3s;
-        }
-
-        .feature-item:hover {
-            border-color: rgba(29, 68, 184, 0.6);
-            background: rgba(0, 0, 0, 0.6);
-        }
-
-        .feature-icon-wrapper {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, rgba(29, 68, 184, 0.3), rgba(29, 68, 184, 0.1));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .feature-icon {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-        }
-
-        .feature-info { flex: 1; }
-        .feature-title { font-size: 15px; font-weight: 600; color: #f3f4f6; margin-bottom: 4px; }
-        .feature-desc { font-size: 12px; color: #9ca3af; line-height: 1.4; }
-
-        .toggle {
-            position: relative;
-            width: 52px;
-            height: 30px;
-            background: #374151;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .toggle.active {
-            background: linear-gradient(135deg, #1d44b8, #2563eb);
-        }
-
-        .toggle-thumb {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 24px;
-            height: 24px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .toggle.active .toggle-thumb {
-            transform: translateX(22px);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px 24px;
+        .input-field {
+            background-color: #222226;
             border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 12px;
+            padding: 16px;
+            width: 100%;
+            color: white;
+            margin-bottom: 12px;
+            outline: none;
+            transition: box-shadow 150ms ease, transform 150ms ease;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+            transform: translateY(-2px);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #1d44b8, #2563eb);
-            color: white;
-            box-shadow: 0 6px 20px rgba(29, 68, 184, 0.4);
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: bold;
+            padding: 14px;
+            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            transition: opacity 0.2s, transform 120ms ease;
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, #25D366, #128C7E);
-            color: white;
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
-            margin-top: 15px;
-        }
-        
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        .btn-primary:hover { transform: translateY(-3px); }
+
+        .btn-secondary {
+            background-color: #222226;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 14px;
+            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+            transition: transform 120ms ease, background 120ms ease;
         }
 
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(29, 68, 184, 0.5);
+        .btn-secondary:hover { transform: translateY(-2px); background:#2a2a2d; }
+
+        .btn-freefire {
+            color: #ffffff !important;
         }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .info-box {
-            background: rgba(0, 0, 0, 0.4);
+        .menu-item {
+            background-color: #222226;
+            border-radius: 15px;
             padding: 16px;
-            border-radius: 10px;
-            border: 1px solid rgba(107, 114, 128, 0.5);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 150ms ease, box-shadow 150ms ease;
         }
 
-        .info-label {
-            font-size: 12px;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
+        .menu-item:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
 
-        .info-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: #4ade80;
+        .menu-item .w-10 {
+            background: rgba(255,255,255,0.03);
+        }
+        .menu-item .w-10 svg {
+            stroke: #ffffff;
+            fill: none;
+        }
+        .menu-item .w-10 svg * {
+            stroke: #ffffff;
+            fill: none;
         }
 
-        .info-subtext {
-            font-size: 11px;
-            color: #6b7280;
-            margin-top: 4px;
+        .card-function {
+            background-color: #222226;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
         }
 
-        .social-links { display: grid; gap: 10px; }
-        .social-link {
+        .checkbox-custom {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #555;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            text-decoration: none;
-            transition: all 0.3s;
+            transition: border-color 120ms ease, transform 120ms ease;
         }
-        .social-whatsapp { background: #25D366; color: white; }
-        .social-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
 
-        .hidden { display: none !important; }
+        .checkbox-custom.active {
+            border-color: #4ade80;
+            background-color: transparent;
+            transform: scale(1.05);
+        }
 
-        #toast {
+        .checkbox-custom.active::after {
+            content: '✓';
+            color: #4ade80;
+            font-size: 14px;
+        }
+
+        .modal-overlay {
             position: fixed;
-            bottom: -100px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-overlay.visible { display: flex; animation: modalFadeIn .22s ease both; }
+
+        .modal-content {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            transform-origin: center;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #ffffff; }
+        input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
+
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: #222;
+            border-radius: 2px;
+            margin-top: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: #fff;
+            position: absolute;
+            animation: load 2s infinite;
+        }
+        @keyframes load {
+            0% { width: 0%; left: 0; }
+            50% { width: 50%; left: 25%; }
+            100% { width: 0%; left: 100%; }
+        }
+
+        .hidden { display: none; }
+
+        .toast {
+            position: fixed;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(30, 30, 30, 0.9);
-            color: white;
-            padding: 14px 24px;
+            bottom: 24px;
+            background: rgba(255,255,255,0.95);
+            color: #000;
+            padding: 12px 16px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
+            font-weight: 600;
+            z-index: 200;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+        }
+
+        .animate-in { animation: pageIn .28s ease both; }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.995); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .eye-btn {
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            padding: 6px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            transition: bottom 0.5s ease-in-out;
-            z-index: 100;
+            justify-content: center;
+            cursor: pointer;
         }
-        #toast.active { bottom: 20px; }
-        #toast.success { border-left: 4px solid #4ade80; }
-        #toast.error { border-left: 4px solid #ef4444; }
-        #toast.loading { border-left: 4px solid #3b82f6; }
+        .eye-btn:active { transform: scale(0.96); }
 
-        .expired-message {
-            margin-top: 20px;
-            padding: 16px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 10px;
-            text-align: center;
-            color: #ef4444;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
-    <div class="animated-bg">
-        <canvas id="neuralCanvas"></canvas>
-        <div class="neural-title">AizenZada</div>
-    </div>
 
-    <div id="toast">
-        <span id="toastIcon"></span>
-        <span id="toastMessage"></span>
-    </div>
-
-    <div id="loadingScreen" class="container">
-        <div class="logo">
-            <img src="logo.gif" alt="AizenZada Loading" onerror="this.parentElement.textContent='A'">
-        </div>
-    </div>
-
-    <div id="loginScreen" class="container hidden">
-        <div class="main-card">
-            <div class="header">
-                <div class="logo">
-                    <img src="logo.png" alt="AizenZada Logo" onerror="this.parentElement.textContent='A'">
-                </div>
-                <h1 class="app-title">AizenZada</h1>
-                <p class="app-subtitle">Valide sua key para continuar</p>
-            </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="keyInput" class="form-label">Sua Key</label>
-                    <input type="text" id="keyInput" class="form-input" placeholder="Cole sua key aqui" autocomplete="off">
-                </div>
-                <button type="submit" id="loginBtn" class="btn btn-primary">Validar Key</button>
-            </form>
-            
-            <div id="expiredMessage" class="expired-message hidden">
-                ⚠️ Esta key expirou. Entre em contato para renovar.
-            </div>
-        </div>
-    </div>
-
-    <div id="mainApp" class="container hidden">
-        <div class="main-card">
-            <div class="tabs">
-                <button class="tab active" data-tab="features">
-                    <img src="infor.png" class="tab-icon" onerror="this.style.display='none'">
-                    Funções
-                </button>
-                <button class="tab" data-tab="info">
-                    <img src="image-4.png" class="tab-icon" onerror="this.style.display='none'">
-                    Informações
-                </button>
-            </div>
-
-            <div id="features" class="tab-content active">
-                <div id="featuresList"></div>
-                <button id="injectBtn" class="btn btn-primary">Ativar Funções</button>
-            </div>
-
-            <div id="info" class="tab-content">
-                <div class="info-box">
-                    <div class="info-label">Expira em</div>
-                    <div id="expirationDate" class="info-value"></div>
-                    <div id="daysLeft" class="info-subtext"></div>
-                </div>
-                <div class="info-box">
-                    <div class="info-label">Contato</div>
-                    <div class="social-links">
-                        <a href="" target="_blank" class="social-link social-Zada">
-                             
-                        </a>
-                        <a href="" target="_blank" class="social-link social-Aizen">
-                            
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const canvas = document.getElementById('neuralCanvas');
-        const ctx = canvas.getContext('2d');
+<div class="panel-container">
+    
+    <!-- LOGIN PAGE -->
+    <div id="page-login" class="p-8 flex flex-col justify-center min-vh-100 flex-grow">
+        <h1 class="text-3xl font-medium text-center mb-6 mt-16">Faça Login</h1>
         
-        function resizeCanvas() { 
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight; 
+        <div class="relative">
+            <input type="text" placeholder="Usuário" class="input-field" id="user-input" autocomplete="username">
+        </div>
+        
+        <div class="relative" style="position:relative;">
+            <input type="password" placeholder="Senha" class="input-field pr-12" id="pass-input" autocomplete="current-password">
+            <button id="toggle-pass" class="eye-btn" aria-label="Mostrar senha" title="Mostrar senha">
+                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            </button>
+        </div>
+
+        <div style="margin-top:8px;">
+            <button onclick="handleLogin()" class="btn-primary mt-6">Entrar</button>
+        </div>
+    </div>
+
+    <!-- MAIN MENU -->
+    <div id="page-main" class="hidden p-6">
+        <div class="flex justify-between items-center mb-10 mt-4">
+            <h2 class="text-2xl font-medium">Funções</h2>
+            <button onclick="logout()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-funcoes')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="8" height="8" rx="2"></rect>
+                    <rect x="13" y="3" width="8" height="8" rx="2"></rect>
+                    <rect x="3" y="13" width="8" height="8" rx="2"></rect>
+                    <rect x="13" y="13" width="8" height="8" rx="2"></rect>
+                </svg>
+            </div>
+            <span class="text-lg">Funções</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-metodos')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 6h11"></path>
+                    <path d="M8 12h11"></path>
+                    <path d="M8 18h11"></path>
+                    <circle cx="4" cy="6" r="1.5"></circle>
+                    <circle cx="4" cy="12" r="1.5"></circle>
+                    <circle cx="4" cy="18" r="1.5"></circle>
+                </svg>
+            </div>
+            <span class="text-lg">Métodos</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-otimizacoes')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2s-4 4-4 8a4 4 0 0 0 8 0c0-4-4-8-4-8z"></path>
+                    <path d="M8.5 12.5C7.2 10 8 8 9.5 6.5"></path>
+                </svg>
+            </div>
+            <span class="text-lg">Otimizações</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-ajustes')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"></path>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82L4.3 4.7A2 2 0 1 1 7.12 1.88l.06.06A1.65 1.65 0 0 0 9 2.27c.5.2.86.7.86 1.27V4a2 2 0 0 1 4 0v.09c0 .57.36 1.07.86 1.27.46.18.9.2 1.32-.02l.06-.06A2 2 0 0 1 20 4.3l-.06.06a1.65 1.65 0 0 0-.33 1.82c.2.5.7.86 1.27.86H21a2 2 0 0 1 0 4h-.09c-.57 0-1.07.36-1.27.86z"></path>
+                </svg>
+            </div>
+            <span class="text-lg">Ajustes Gerais</span>
+        </div>
+
+        <div class="menu-item" onclick="showSubPage('page-suporte')">
+            <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.6" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M9.5 9.5a2.5 2.5 0 1 1 5 0c0 2-2.5 2.5-2.5 4"></path>
+                    <path d="M12 17h.01"></path>
+                </svg>
+            </div>
+            <span class="text-lg">Suporte</span>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: FUNCOES (AIMBOT) -->
+    <div id="page-funcoes" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Funções</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimbot')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-bot Auxílio</h3>
+                <p class="text-gray-400 text-sm mt-1">Ajuda a acertar os tiros.</p>
+            </div>
+            <div id="cb-aimbot" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimlock')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-Lock Auxílio</h3>
+                <p class="text-gray-400 text-sm mt-1">Não passa da cabeça ou treme os tiros.</p>
+            </div>
+            <div id="cb-aimlock" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('aimfov')">
+            <div>
+                <h3 class="text-lg font-medium">Aim-Fov Beta</h3>
+                <p class="text-gray-400 text-sm mt-1">Puxa sua mira para os inimigos.</p>
+            </div>
+            <div id="cb-aimfov" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('miraBranca')">
+            <div>
+                <h3 class="text-lg font-medium">Melhorar Mira Branca</h3>
+                <p class="text-gray-400 text-sm mt-1">Aprimora a precisão da mira branca (crosshair).</p>
+            </div>
+            <div id="cb-miraBranca" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('miraScope')">
+            <div>
+                <h3 class="text-lg font-medium">Melhorar Mira Scope</h3>
+                <p class="text-gray-400 text-sm mt-1">Ajustes automáticos para mira com scope.</p>
+            </div>
+            <div id="cb-miraScope" class="checkbox-custom"></div>
+        </div>
+
+        <div class="card-function flex justify-between items-start" onclick="toggleFunction('calibrarSens')">
+            <div>
+                <h3 class="text-lg font-medium">Calibrar Sensibilidade</h3>
+                <p class="text-gray-400 text-sm mt-1">Calibra sensibilidade para o seu perfil.</p>
+            </div>
+            <div id="cb-calibrarSens" class="checkbox-custom"></div>
+        </div>
+
+        <div class="mt-8 space-y-4">
+            <button class="btn-secondary btn-freefire" onclick="launchGame('com.dts.freefire','Free Fire Normal')">Abrir Free Fire Normal</button>
+            <button class="btn-secondary btn-freefire" onclick="launchGame('com.dts.freefiremax','Free Fire MAX')">Abrir Free Fire MAX</button>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: METODOS -->
+    <div id="page-metodos" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Métodos</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">ControlShot</h3>
+                <p class="text-gray-400 text-sm">Ajuda a não passar da cabeça com qualquer arma.</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">ControllFull</h3>
+                <p class="text-gray-400 text-sm">Facilita o acerto na cabeça com foco em armas como UMP, MAC10, MP40...</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+        
+        <div class="card-function flex justify-between items-center">
+            <div class="pr-4">
+                <h3 class="text-lg font-medium">GlooWall</h3>
+                <p class="text-gray-400 text-sm">Tenha o gelo perfeito.</p>
+            </div>
+            <div class="bg-gray-700 p-2 rounded-lg">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6z"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: OTIMIZACOES -->
+    <div id="page-otimizacoes" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Otimizações</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function flex justify-between items-center" onclick="toggleOptimization('Limpar fotos duplicadas', this)">
+            <div>
+                <h3 class="text-lg font-medium">Limpar fotos duplicadas</h3>
+                <p class="text-gray-400 text-xs">Remove fotos duplicadas da biblioteca de fotos</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="card-function flex justify-between items-center" onclick="toggleOptimization('Limpar cache', this)">
+            <div>
+                <h3 class="text-lg font-medium">Limpar cache</h3>
+                <p class="text-gray-400 text-xs">Limpa o cache do iPhone</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="card-function flex justify-between items-center" onclick="toggleOptimization('Otimizar armazenamento', this)">
+            <div>
+                <h3 class="text-lg font-medium">Otimizar armazenamento</h3>
+                <p class="text-gray-400 text-xs">Libera espaço de armazenamento no dispositivo</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <button class="btn-primary mt-6 text-black uppercase tracking-widest py-3">Otimizar</button>
+    </div>
+
+    <!-- SUBPAGE: AJUSTES GERAIS -->
+    <div id="page-ajustes" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Ajustes Gerais</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function">
+            <h3 class="text-lg font-medium">Tema</h3>
+            <p class="text-gray-400 text-sm mt-1">Alternar tema claro/escuro (simulação).</p>
+            <div class="mt-4">
+                <button class="btn-secondary" onclick="toggleTheme()">Alternar Tema</button>
+            </div>
+        </div>
+
+        <div class="card-function">
+            <h3 class="text-lg font-medium">Notificações</h3>
+            <p class="text-gray-400 text-sm mt-1">Ativar/Desativar notificações locais.</p>
+            <div class="mt-4">
+                <label class="switch"><input id="notif-switch" type="checkbox"><span class="slider"></span></label>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPAGE: SUPORTE -->
+    <div id="page-suporte" class="hidden p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-medium">Suporte</h2>
+            <button onclick="backToMain()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+
+        <div class="card-function">
+            <h3 class="text-lg font-medium">Contato</h3>
+            <p class="text-gray-400 text-sm mt-1">: </p>
+            <p class="text-gray-400 text-sm mt-1">: @AizenZada</p>
+            <div class="mt-4">
+                <button class="btn-secondary" onclick="showToast('Enviando solicitação de suporte...')">Abrir Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: LOGIN SUCCESS -->
+    <div id="modal-success" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Sucesso</h3>
+            <p class="text-sm">Usuário: <span id="display-user"></span></p>
+            <p class="text-sm">Nome de Exibição: <span id="display-name"></span></p>
+            <p class="text-sm mt-4">Expira em: <span id="expiry-date"></span></p>
+            <p class="text-sm mb-6">Vendedor: Aizen Zada</p>
+            <button onclick="closeModal('modal-success', true)" class="bg-emerald-500 text-black font-bold py-3 w-full rounded-xl">OK</button>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRM ACTIVATION -->
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Confirmação</h3>
+            <p class="text-sm mb-6">Tem certeza de que deseja ativar <span id="func-name"></span>?</p>
+            <button onclick="startActivation()" class="bg-sky-400 text-black font-bold py-3 w-full rounded-xl mb-3">Confirmar</button>
+            <button onclick="closeModal('modal-confirm')" class="bg-sky-400 text-black font-bold py-3 w-full rounded-xl">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL: WAITING / AGUARDE -->
+    <div id="modal-wait" class="modal-overlay">
+        <div class="modal-content py-10">
+            <h3 class="text-xl font-medium">Aguarde</h3>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ACTIVATION SUCCESS -->
+    <div id="modal-act-success" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Sucesso</h3>
+            <p class="text-sm mb-6"><span id="activated-name"></span> foi ativado com sucesso!</p>
+            <div id="cert-link-container" class="mt-2"></div>
+            <button onclick="closeModal('modal-act-success')" class="bg-emerald-500 text-black font-bold py-3 w-full rounded-xl">OK</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- AUDIO ELEMENTS: 4 tinguj të ndryshëm -->
+<audio id="aimbot-sound" src="Aimbot Activated.wav" preload="auto"></audio>
+<audio id="aimlock-sound" src="Test.mov" preload="auto"></audio>
+<audio id="activate-sound" src="Activa.wav" preload="auto"></audio>
+<audio id="deactivate-sound" src="desactivar.wav" preload="auto"></audio>
+
+<script>
+    let currentUser = "";
+    let selectedFunc = "";
+    let pendingOptElem = null;
+    let darkMode = true;
+
+    // VALID KEYS SYSTEM
+    const VALID_KEYS = {
+        'test2200': { 
+            password: 'ExternalV2', 
+            displayName: 'Premium User',
+            expiryDate: '2026-01-30'
+        },
+        'admin': { 
+            password: 'admin2024', 
+            displayName: 'Administrator',
+            expiryDate: '2026-12-31'
+        },
+        'test': { 
+            password: 'test123', 
+            displayName: 'Test Account',
+            expiryDate: '2026-03-15'
+        },
+        'aizen': { 
+            password: 'aizen123', 
+            displayName: 'Aizen Zada',
+            expiryDate: '2026-02-15'
         }
-        resizeCanvas();
-        
-        const particles = [];
-        const particleCount = 80;
-        const connectionDistance = 150;
-        
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.radius = Math.random() * 2 + 1;
-            }
-            update() {
-                this.x += this.vx; 
-                this.y += this.vy;
-                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#1d44b8';
-                ctx.fill();
+    };
+
+    const FUNCTIONS_MAP = {
+        'aimbot': 'Aim-bot Auxílio',
+        'aimlock': 'Aim-Lock Auxílio',
+        'aimfov': 'Aim-Fov Beta',
+        'miraBranca': 'Melhorar Mira Branca',
+        'miraScope': 'Melhorar Mira Scope',
+        'calibrarSens': 'Calibrar Sensibilidade'
+    };
+
+    const CERT_URL = "Aimfov-beta";
+
+    // PLAY AIMBOT SPECIAL SOUND
+    function playAimbotSound(volume = 0.6) {
+        const audio = document.getElementById('aimbot-sound');
+        if (!audio) return;
+        try {
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    // PLAY AIMLOCK SPECIAL SOUND
+    function playAimlockSound(volume = 0.6) {
+        const audio = document.getElementById('aimlock-sound');
+        if (!audio) return;
+        try {
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    // PLAY ACTIVATION SOUND (për funksionet e tjera)
+    function playActivateSound(volume = 0.6) {
+        const audio = document.getElementById('activate-sound');
+        if (!audio) return;
+        try {
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    // PLAY DEACTIVATION SOUND
+    function playDeactivateSound(volume = 0.6) {
+        const audio = document.getElementById('deactivate-sound');
+        if (!audio) return;
+        try {
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        } catch (e) {}
+    }
+
+    function showElementWithAnim(el) {
+        el.classList.remove('hidden');
+        el.classList.add('animate-in');
+        setTimeout(() => el.classList.remove('animate-in'), 350);
+    }
+
+    // CHECK AUTO LOGIN ON PAGE LOAD
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedUser = localStorage.getItem('loggedUser');
+        const savedExpiry = localStorage.getItem('expiryDate');
+
+        if (savedUser && savedExpiry) {
+            const today = new Date();
+            const expiry = new Date(savedExpiry);
+
+            if (today <= expiry) {
+                // AUTO-LOGIN
+                currentUser = savedUser;
+                document.getElementById('page-login').classList.add('hidden');
+                showElementWithAnim(document.getElementById('page-main'));
+                return;
+            } else {
+                // Key expirou
+                localStorage.removeItem('loggedUser');
+                localStorage.removeItem('expiryDate');
+                localStorage.removeItem('displayName');
             }
         }
+
+        showElementWithAnim(document.getElementById('page-login'));
+    });
+
+    function handleLogin() {
+        const user = document.getElementById('user-input').value;
+        const pass = document.getElementById('pass-input').value;
+
+        // Kontrollo nëse është bosh
+        if(user.trim() === "") {
+            alert("❌ Por favor, insira o usuário");
+            return;
+        }
+
+        // VALIDIMI I KEY
+        if (!VALID_KEYS[user]) {
+            alert("❌ Usuário inválido!");
+            return;
+        }
+
+        if (VALID_KEYS[user].password !== pass) {
+            alert("❌ Senha incorreta!");
+            return;
+        }
+
+        // KONTROLLO EXPIRY DATE
+        const today = new Date();
+        const expiry = new Date(VALID_KEYS[user].expiryDate);
         
-        for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+        if (today > expiry) {
+            alert("❌ Sua key expirou em " + VALID_KEYS[user].expiryDate);
+            return;
+        }
+
+        // RUAJ NË LOCALSTORAGE
+        localStorage.setItem('loggedUser', user);
+        localStorage.setItem('expiryDate', VALID_KEYS[user].expiryDate);
+        localStorage.setItem('displayName', VALID_KEYS[user].displayName);
+
+        // LOGIN SUKSES
+        currentUser = user;
+        document.getElementById('display-user').innerText = user;
+        document.getElementById('display-name').innerText = VALID_KEYS[user].displayName;
+        document.getElementById('expiry-date').innerText = VALID_KEYS[user].expiryDate;
+
+        const modal = document.getElementById('modal-success');
+        modal.classList.add('visible');
+    }
+
+    function closeModal(id, proceedToMain = false) {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.remove('visible');
+        setTimeout(() => {
+            if(proceedToMain) {
+                document.getElementById('page-login').classList.add('hidden');
+                showElementWithAnim(document.getElementById('page-main'));
+            }
+        }, 120);
+    }
+
+    function showSubPage(id) {
+        document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+        const el = document.getElementById(id);
+        if (el) showElementWithAnim(el);
+    }
+
+    function backToMain() {
+        document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+        showElementWithAnim(document.getElementById('page-main'));
+    }
+
+    function toggleFunction(type) {
+        const cb = document.getElementById('cb-' + type);
         
-        function connectParticles() {
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < connectionDistance) {
-                        const opacity = 1 - (dist / connectionDistance);
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(29, 68, 184, ${opacity * 0.3})`;
-                        ctx.lineWidth = 1;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
+        // DEACTIVATION
+        if(cb && cb.classList.contains('active')) {
+            cb.classList.remove('active');
+            playDeactivateSound(0.6);
+            return;
+        } 
+        // ACTIVATION
+        else {
+            selectedFunc = type;
+            pendingOptElem = null;
+            document.getElementById('func-name').innerText = FUNCTIONS_MAP[type] || type;
+            const m = document.getElementById('modal-confirm');
+            m.classList.add('visible');
+        }
+    }
+
+    function toggleOptimization(displayName, elem) {
+        const checkbox = elem.querySelector('input[type="checkbox"]');
+        if (checkbox && checkbox.checked) {
+            checkbox.checked = false;
+            showToast(displayName + " desativado");
+            return;
+        }
+
+        selectedFunc = 'opt:' + displayName;
+        pendingOptElem = elem;
+        document.getElementById('func-name').innerText = displayName;
+        const m = document.getElementById('modal-confirm');
+        m.classList.add('visible');
+    }
+
+    function getDisplayName(key) {
+        if (!key) return '';
+        if (key.startsWith('opt:')) return key.slice(4);
+        return FUNCTIONS_MAP[key] || key;
+    }
+
+    function startActivation() {
+        const m = document.getElementById('modal-confirm');
+        m.classList.remove('visible');
+        const mw = document.getElementById('modal-wait');
+        mw.classList.add('visible');
+
+        setTimeout(() => {
+            mw.classList.remove('visible');
+            const displayName = getDisplayName(selectedFunc);
+            document.getElementById('activated-name').innerText = displayName;
+
+            const certContainer = document.getElementById('cert-link-container');
+            if (certContainer) certContainer.innerHTML = '';
+
+            // Apply UI changes
+            if (selectedFunc && selectedFunc.startsWith('opt:')) {
+                if (pendingOptElem) {
+                    const cb = pendingOptElem.querySelector('input[type="checkbox"]');
+                    if (cb) cb.checked = true;
+                }
+            } else {
+                if (FUNCTIONS_MAP[selectedFunc]) {
+                    const el = document.getElementById('cb-' + selectedFunc);
+                    if (el) el.classList.add('active');
+                    
+                    // PLAY APPROPRIATE SOUND
+                    if (selectedFunc === 'aimbot') {
+                        playAimbotSound(0.6);  // Aimbot Activated.wav
+                    } 
+                    else if (selectedFunc === 'aimlock') {
+                        playAimlockSound(0.6); // Aimlock Activated.wav
+                    }
+                    else {
+                        playActivateSound(0.6); // 1.mp3 për të tjerat
                     }
                 }
             }
-        }
-        
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            connectParticles();
-            requestAnimationFrame(animate);
-        }
-        animate();
-        window.addEventListener('resize', resizeCanvas);
 
-        const VALID_KEYS = {
-            'AIZEN-2024-DEMO': {
-                expires: new Date('2026-01-30T23:59:59')
-            },
-            'AIZEN-TEST-KEY1': {
-                expires: new Date('2026-01-30T23:59:59')
-            }
-        };
+            const mac = document.getElementById('modal-act-success');
 
-        let currentKeyData = null;
-        let countdownInterval = null;
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const icon = document.getElementById('toastIcon');
-            const msg = document.getElementById('toastMessage');
-            toast.className = `active ${type}`;
-            icon.textContent = type === 'success' ? '✓' : type === 'error' ? '✕' : '⟳';
-            msg.textContent = message;
-            setTimeout(() => toast.classList.remove('active'), 3000);
-        }
-
-        function validateKey(keyCode) {
-            try {
-                showToast('Validando chave...', 'loading');
-                
-                const keyInfo = VALID_KEYS[keyCode];
-                
-                if (!keyInfo) {
-                    throw new Error('Key inválida');
+            // Special case for aimfov
+            if (selectedFunc === 'aimfov') {
+                if (certContainer) {
+                    const p = document.createElement('p');
+                    p.className = 'text-sm';
+                    p.innerText = 'Clique para baixar o certificado (iPhone):';
+                    const a = document.createElement('a');
+                    a.id = 'cert-link';
+                    a.href = CERT_URL;
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    a.className = 'btn-secondary';
+                    a.style.display = 'inline-block';
+                    a.style.marginTop = '10px';
+                    a.innerText = 'Instalar Certificado';
+                    certContainer.appendChild(p);
+                    certContainer.appendChild(a);
                 }
 
-                const expiryDate = keyInfo.expires;
-                
-                if (expiryDate < new Date()) {
-                    document.getElementById('expiredMessage').classList.remove('hidden');
-                    throw new Error('Esta key expirou');
-                }
-                
-                currentKeyData = {
-                    key: keyCode,
-                    expiryDate: expiryDate.toISOString()
-                };
-                
-                localStorage.setItem('aizenzada_key', keyCode);
-                
-                showToast('Acesso liberado!', 'success');
-                setTimeout(showMainApp, 1500);
-                
-            } catch (err) {
-                showToast(err.message, 'error');
-                document.getElementById('loginBtn').disabled = false;
-                document.getElementById('loginBtn').textContent = 'Validar Key';
-            }
-        }
-
-        function logout() {
-            localStorage.clear();
-            if (countdownInterval) clearInterval(countdownInterval);
-            showToast('Sessão encerrada', 'error');
-            setTimeout(() => window.location.reload(), 1000);
-        }
-
-        function showMainApp() {
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
-            initFeatures();
-            updateExpirationInfo();
-        }
-
-        const features = [
-            { id: 1, title: "Precisão Full", desc: "Aumenta a precisão da sua mira em até 5x.", icon: "icon1.png" },
-            { id: 2, title: "Reduzir recuo", desc: "Remove 60% do recuo de armas AR e SMG.", icon: "icon2.png" },
-            { id: 3, title: "Remover Input lag", desc: "Retira todos os pequenos lags e travamentos do Jogo.", icon: "icon3.png" }
-        ];
-        let featureStates = Array(features.length).fill(false);
-
-        function initFeatures() {
-            const container = document.getElementById('featuresList');
-            container.innerHTML = features.map((f, i) => `
-                <div class="feature-item">
-                    <div class="feature-icon-wrapper">
-                        <img src="${f.icon}" alt="${f.title}" class="feature-icon" onerror="this.style.display='none'">
-                    </div>
-                    <div class="feature-info">
-                        <div class="feature-title">${f.title}</div>
-                        <div class="feature-desc">${f.desc}</div>
-                    </div>
-                    <div class="toggle ${featureStates[i] ? 'active' : ''}" data-index="${i}">
-                        <div class="toggle-thumb"></div>
-                    </div>
-                </div>
-            `).join('');
-
-            document.querySelectorAll('.toggle').forEach(toggle => {
-                toggle.addEventListener('click', function() {
-                    const i = parseInt(this.dataset.index);
-                    featureStates[i] = !featureStates[i];
-                    this.classList.toggle('active');
-                    showToast(featureStates[i] ? `${features[i].title} ativada!` : `${features[i].title} desativada!`);
-                });
-            });
-        }
-
-        document.getElementById('injectBtn').addEventListener('click', function() {
-            const active = featureStates.filter(s => s).length;
-            if (active === 0) return showToast('Ative pelo menos uma função!', 'error');
-            
-            this.disabled = true;
-            this.textContent = 'Ativando...';
-            showToast('Iniciando ativação...', 'loading');
-            
-            setTimeout(() => {
-                showToast('Ativação concluída!', 'success');
-                this.disabled = false;
-                this.textContent = 'ABRIR O FREE FIRE';
-                
                 setTimeout(() => {
-                    showToast('Abrindo Free Fire...', 'loading');
-                    setTimeout(() => {
-                        window.location.href = 'freefireth://';
-                    }, 1000);
-                }, 500);
-            }, 3000);
-        });
-
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const targetTab = this.dataset.tab;
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                document.getElementById(targetTab).classList.add('active');
-            });
-        });
-
-        function updateExpirationInfo() {
-            if (!currentKeyData) return;
-            
-            const expiry = new Date(currentKeyData.expiryDate);
-            const dateEl = document.getElementById('expirationDate');
-            const daysEl = document.getElementById('daysLeft');
-            
-            const now = new Date();
-            if (expiry < now) {
-                dateEl.textContent = 'EXPIRADA';
-                dateEl.style.color = '#ef4444';
-                daysEl.textContent = 'Esta key não é mais válida';
-                logout();
-                return;
+                    try {
+                        window.location.href = CERT_URL;
+                    } catch (e) {}
+                }, 1200);
             }
-            
-            dateEl.textContent = expiry.toLocaleDateString('pt-BR') + ' às ' + expiry.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
-            const diff = expiry - now;
-            const days = Math.floor(diff / 86400000);
-            const hours = Math.floor((diff % 86400000) / 3600000);
-            daysEl.textContent = `${days} dias e ${hours} horas restantes`;
-            
-            setInterval(() => {
-                const currentTime = new Date();
-                if (expiry < currentTime) {
-                    logout();
-                }
-            }, 60000);
-        }
 
-        document.getElementById('loginForm').addEventListener('submit', e => {
-            e.preventDefault();
-            const key = document.getElementById('keyInput').value.trim();
-            const btn = document.getElementById('loginBtn');
-            
-            if (!key) return showToast('Digite uma key', 'error');
-            
-            btn.disabled = true;
-            btn.textContent = 'Validando...';
-            document.getElementById('expiredMessage').classList.add('hidden');
-            validateKey(key);
-        });
+            mac.classList.add('visible');
+        }, 2000);
+    }
+
+    function logout() {
+        // FSHIJ NGA LOCALSTORAGE
+        localStorage.removeItem('loggedUser');
+        localStorage.removeItem('expiryDate');
+        localStorage.removeItem('displayName');
+        
+        document.getElementById('page-main').classList.add('hidden');
+        showElementWithAnim(document.getElementById('page-login'));
+        document.getElementById('user-input').value = "";
+        document.getElementById('pass-input').value = "";
+    }
+
+    function showToast(message, duration = 1800) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerText = message;
+        document.body.appendChild(t);
+        setTimeout(() => { t.style.transition = 'opacity 200ms'; t.style.opacity = '0'; }, duration - 200);
+        setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, duration);
+    }
+
+    function launchGame(packageName, gameName) {
+        showToast("ativando as funcoes no " + gameName);
 
         setTimeout(() => {
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            
-            const savedKey = localStorage.getItem('aizenzada_key');
-            if (savedKey) {
-                document.getElementById('keyInput').value = savedKey;
-                document.getElementById('loginBtn').textContent = 'Validando...';
-                document.getElementById('loginBtn').disabled = true;
-                validateKey(savedKey);
+            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                window.location.href = "freefire://";
+            } else {
+                window.location.href = "intent://#Intent;scheme=android-app;package=" + packageName + ";end";
             }
-        }, 2000);
-    </script>
+        }, 1500);
+    }
+
+    // Password visibility toggle
+    (function setupPasswordToggle(){
+        const toggle = document.getElementById('toggle-pass');
+        const passInput = document.getElementById('pass-input');
+        const eyeIcon = document.getElementById('eye-icon');
+
+        toggle.addEventListener('click', () => {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggle.setAttribute('aria-label', 'Fshih fjalëkalimin');
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.996 9.996 0 012.223-3.804M6.82 6.82A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.96 9.96 0 01-4.293 5.198M3 3l18 18"/>';
+            } else {
+                passInput.type = 'password';
+                toggle.setAttribute('aria-label', 'Trego fjalëkalimin');
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+            }
+        });
+    })();
+
+    function toggleTheme() {
+        darkMode = !darkMode;
+        if (darkMode) {
+            document.body.style.backgroundColor = '#0d0d0f';
+            document.querySelector('.panel-container').style.backgroundColor = '#16161a';
+            showToast('Tema escuro ativado');
+        } else {
+            document.body.style.backgroundColor = '#f5f7fb';
+            document.querySelector('.panel-container').style.backgroundColor = '#ffffff';
+            showToast('Tema claro ativado');
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        const overlays = ['modal-success','modal-confirm','modal-wait','modal-act-success'];
+        overlays.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.classList.contains('visible') && e.target === el) {
+                el.classList.remove('visible');
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
